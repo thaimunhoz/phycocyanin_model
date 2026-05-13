@@ -1,4 +1,4 @@
-# phycocyanin_model
+# Phycocyanin Hybrid Model
 
 This repository contains research scripts and supporting spreadsheets for the phycocyanin retrieval workflow built around Sentinel-3 OLCI data.
 
