@@ -1,8 +1,6 @@
 # phycocyanin_model
 
-This repository contains research scripts and supporting spreadsheets for a phycocyanin retrieval workflow built around Sentinel-3 OLCI data. The code is organized by processing stage rather than as a packaged Python module.
-
-The project currently looks like a working research codebase: most scripts are meant to be run manually, many input and output locations are hard-coded, and several scripts depend on local Excel or raster files that are not fully portable yet.
+This repository contains research scripts and supporting spreadsheets for the phycocyanin retrieval workflow built around Sentinel-3 OLCI data.
 
 ## Folder overview
 
@@ -81,11 +79,10 @@ Typical use:
 Notes:
 
 - These scripts rely on `scikit-learn`, `pandas`, `numpy`, `matplotlib`, `seaborn`, `ppscore`, and `skfeature`.
-- The output training tables are consumed by the `hybrid_model` folder.
 
 ### `hybrid_model`
 
-Purpose: apply the full hybrid phycocyanin model to an atmospherically corrected OLCI image.
+Purpose: Apply the full hybrid phycocyanin model to an atmospherically corrected OLCI image.
 
 Files:
 
@@ -101,73 +98,3 @@ What the script does:
 3. Uses a Random Forest classifier to assign each valid pixel to a concentration class.
 4. Applies one linear bio-optical model for low-phycocyanin pixels and another for high-phycocyanin pixels.
 5. Writes output rasters for the classification and concentration maps.
-
-Important note:
-
-- `hybrid_model_mapaquali.py` appears incomplete near the final output section. One `CreateGeoTiff(...)` call for the concentration raster is cut off in the current file, so this script likely needs a quick repair before it can run end-to-end.
-
-## Recommended workflow
-
-If you want to run the full pipeline from raw OLCI inputs to phycocyanin maps, the intended order appears to be:
-
-1. Use `OLCI_bands_simulation` to prepare or inspect spectral response functions and simulated band datasets.
-2. Use `Training` to select features, tune the classifier, and produce the final Random Forest training tables.
-3. Use `atmospheric_correction` to generate 6S parameters and convert TOA reflectance to atmospherically corrected `Rrs`.
-4. Use `hybrid_model` to classify pixels and estimate phycocyanin concentration.
-
-## How to run the scripts
-
-These scripts are plain Python files, so the usual pattern is:
-
-```powershell
-python .\Training\RF_training.py
-python .\atmospheric_correction\Py6_OLCI_mapaquali.py
-python .\hybrid_model\hybrid_model_mapaquali.py
-```
-
-Before running anything, update the hard-coded file paths inside each script. Most of them still point to the original author’s `G:\...` directories.
-
-## Suggested environment
-
-At minimum, expect to need packages in this range:
-
-- `numpy`
-- `pandas`
-- `matplotlib`
-- `scipy`
-- `scikit-learn`
-- `seaborn`
-- `xarray`
-- `Py6S`
-- `gdal`
-- `ppscore`
-- `skfeature-chappers`
-- `openpyxl`
-
-A simple setup could be:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install numpy pandas matplotlib scipy scikit-learn seaborn xarray Py6S ppscore openpyxl
-```
-
-For `GDAL` and `skfeature`, installation can be more system-specific on Windows, so you may want to install them through Conda if `pip` gives trouble.
-
-## Practical cleanup ideas
-
-If you plan to keep developing this repository, the highest-value improvements would be:
-
-1. Replace hard-coded paths with relative paths or a small config file.
-2. Add a `requirements.txt` or `environment.yml`.
-3. Separate reusable functions from one-off notebook-style scripts.
-4. Repair and test `hybrid_model_mapaquali.py`.
-5. Add small sample inputs so the workflow can be reproduced more easily.
-
-## Current limitations
-
-- The code is not yet packaged as a reusable library.
-- Some scripts write `.csv` outputs while the repository currently stores `.xlsx` versions of related files.
-- Several files use Portuguese variable names and comments, which is fine internally but may slow down onboarding for new collaborators.
-- Reproducibility depends on external local datasets that are not fully included in the repository.
